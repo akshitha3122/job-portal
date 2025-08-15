@@ -1,0 +1,66 @@
+package com.learnJDBC;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.Scanner;
+
+public class JobPortalMain {
+    private static final String url = "jdbc:mysql://localhost:3306/job_portal";
+    private static final String username = "root";
+    private static final String password = "Akshitha@3122"; // change as needed
+
+    public static void main(String[] args) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        try (Connection connection = DriverManager.getConnection(url, username, password);
+             Scanner scanner = new Scanner(System.in)) {
+
+            Company company = new Company(connection, scanner);
+            JobPost jobPost = new JobPost(connection, scanner);
+            Candidate candidate = new Candidate(connection, scanner);
+            ApplicationHandler appHandler = new ApplicationHandler(connection, scanner);
+
+            while (true) {
+                System.out.println("\n=== Job Recruitment Portal ===");
+                System.out.println("1. Add Company");
+                System.out.println("2. View Companies");
+                System.out.println("3. Post a Job");
+                System.out.println("4. View Job Posts");
+                System.out.println("5. Register Candidate");
+                System.out.println("6. View Candidates");
+                System.out.println("7. Apply for Job");
+                System.out.println("8. View Applications");
+                System.out.println("9. Update Application Status");
+                System.out.println("10. Exit");
+                System.out.print("Please Enter Your Choice: ");
+
+                int choice = Integer.parseInt(scanner.nextLine().trim());
+
+                switch (choice) {
+                    case 1 -> company.addCompany();
+                    case 2 -> company.viewCompanies();
+                    case 3 -> jobPost.postJob(company);
+                    case 4 -> jobPost.viewJobPosts();
+                    case 5 -> candidate.registerCandidate();
+                    case 6 -> candidate.viewCandidates();
+                    case 7 -> appHandler.applyForJob(candidate, jobPost);
+                    case 8 -> appHandler.viewApplications();
+                    case 9 -> appHandler.updateApplicationStatus();
+                    case 10 -> {
+                        System.out.println("THANK YOU! FOR USING JOB RECRUITMENT PORTAL!!");
+                        return;
+                    }
+                    default -> System.out.println("Please Enter Valid Input");
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+}
